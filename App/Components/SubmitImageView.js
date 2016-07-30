@@ -1,4 +1,5 @@
 import * as firebase from 'firebase';
+import * as _ from 'lodash';
 import React, { Component } from 'react';
 import * as Clarifai from 'clarifai';
 import {
@@ -67,6 +68,17 @@ class SubmitImageView extends Component {
         imagePath: this.props.path,
         photoTags: tags
       });
+
+      let newTags = _.difference(this.props.currentTags, tags);
+      let correctTags = _.intersection(this.props.currentTags, tags);
+
+      this.props.changeTags(newTags);
+
+      // Strangely enough this url-like argument is case sensitive
+      this.props.userRef.ref('users/' + this.user.displayName.toLowerCase()).set({
+        currentTags: newTags
+      });
+
     }, (err) => { console.log(err); });
   }
 
